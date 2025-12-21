@@ -28,8 +28,16 @@
     "segment-alternative",
     "customer-data-platform"
   ],
-  "author": "",
+  "author": "Mr Tung",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/StickyQR/analytics"
+  },
+  "homepage": "https://github.com/StickyQR/analytics#readme",
+  "bugs": {
+    "url": "https://github.com/StickyQR/analytics/issues"
+  },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "^1.21.0 || ^2.0.0",
     "expo-constants": ">=16.0.0",
