@@ -202,13 +202,28 @@ git push origin develop
 
 1. Generate NPM token:
    - Go to https://www.npmjs.com/settings/YOUR_USERNAME/tokens
-   - Create "Automation" token
+   - Create **"Automation" token** (NOT "Publish" / NOT "Read-only")
    - Copy the token
 
 2. Add to GitHub Secrets:
    - Go to repository Settings → Secrets → Actions
    - Add secret: `NPM_TOKEN`
    - Paste the token
+
+### If `npm publish` fails with `EOTP`
+
+If you see this in GitHub Actions:
+
+```text
+npm error code EOTP
+npm error This operation requires a one-time password from your authenticator.
+```
+
+That means your NPM account requires 2FA for publishing and the token you provided can’t publish without an OTP prompt.
+
+Fix:
+- Use an **Automation token** for `NPM_TOKEN` (recommended for CI)
+- Or change NPM 2FA setting to **“authorization only”** (so CI publish doesn’t require OTP)
 
 ### Publish via GitHub Release
 
