@@ -1,0 +1,68 @@
+{
+  "name": "@stickyqr/analytics",
+  "version": "1.0.0",
+  "description": "Analytics SDK for Web & React Native - A Segment.js alternative",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "react-native": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "jest",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "stickyqr",
+    "analytics",
+    "tracking",
+    "react-native",
+    "expo",
+    "segment-alternative",
+    "customer-data-platform"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "@react-native-async-storage/async-storage": "^1.21.0 || ^2.0.0",
+    "expo-constants": ">=16.0.0",
+    "expo-device": ">=6.0.0",
+    "react-native": ">=0.70.0"
+  },
+  "peerDependenciesMeta": {
+    "@react-native-async-storage/async-storage": {
+      "optional": true
+    },
+    "expo-constants": {
+      "optional": true
+    },
+    "expo-device": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/jest": "^29.5.11",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "rollup": "^4.9.4",
+    "@rollup/plugin-terser": "^0.4.4",
+    "ts-jest": "^29.1.1",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3"
+  }
+}

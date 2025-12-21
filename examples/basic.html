@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StickyQR Analytics SDK - Basic Example</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .card {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    button {
+      background: #0066cc;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #0052a3;
+    }
+    input {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin: 5px;
+      width: 200px;
+    }
+    pre {
+      background: #282c34;
+      color: #abb2bf;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    .status {
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    .success { background: #d4edda; color: #155724; }
+    .info { background: #d1ecf1; color: #0c5460; }
+  </style>
+</head>
+<body>
+  <h1>StickyQR Analytics SDK - Basic Example</h1>
+
+  <div class="card">
+    <h2>Current User</h2>
+    <div id="user-info" class="info status">Not identified</div>
+    <button onclick="showUserInfo()">Show User Info</button>
+  </div>
+
+  <div class="card">
+    <h2>Identify User</h2>
+    <input type="text" id="userId" placeholder="User ID (e.g., user-123)">
+    <input type="email" id="userEmail" placeholder="Email">
+    <input type="text" id="userName" placeholder="Name">
+    <br>
+    <button onclick="identifyUser()">Identify</button>
+    <button onclick="resetUser()">Reset (Logout)</button>
+  </div>
+
+  <div class="card">
+    <h2>Track Events</h2>
+    <button onclick="trackButtonClick()">Track: Button Clicked</button>
+    <button onclick="trackCustomEvent()">Track: Custom Event</button>
+    <button onclick="trackPurchase()">Track: Purchase</button>
+  </div>
+
+  <div class="card">
+    <h2>Page Tracking</h2>
+    <button onclick="trackPage()">Track Page View</button>
+    <button onclick="trackScreen()">Track Screen View</button>
+  </div>
+
+  <div class="card">
+    <h2>Advanced</h2>
+    <button onclick="aliasUser()">Alias User</button>
+    <button onclick="groupUser()">Join Group</button>
+    <button onclick="flushQueue()">Flush Queue</button>
+    <button onclick="debugInfo()">Debug Info</button>
+  </div>
+
+  <div class="card">
+    <h2>Console Output</h2>
+    <p>Check browser console for detailed event logs</p>
+    <pre id="console-output">Open DevTools Console (F12)</pre>
+  </div>
+
+  <script type="module">
+    // Import from your built bundle
+    // In production, use: import { Analytics, ConsoleLoggerPlugin } from '@stickyqr/analytics';
+
+    // For demo purposes, we'll create a mock analytics instance
+    import { Analytics, ConsoleLoggerPlugin, DeviceEnrichmentPlugin } from '../dist/index.esm.js';
+
+    // Initialize Analytics
+    window.analytics = new Analytics({
+      writeKey: 'demo-write-key-123',
+      debug: true,
+      trackPageViews: true,
+      plugins: [
+        new ConsoleLoggerPlugin(),
+        new DeviceEnrichmentPlugin()
+      ]
+    });
+
+    // Make functions available globally
+    window.identifyUser = function() {
+      const userId = document.getElementById('userId').value || 'user-' + Date.now();
+      const email = document.getElementById('userEmail').value || 'user@example.com';
+      const name = document.getElementById('userName').value || 'John Doe';
+
+      analytics.identify(userId, {
+        email: email,
+        name: name,
+        signupDate: new Date().toISOString()
+      });
+
+      showStatus('User identified: ' + userId, 'success');
+      showUserInfo();
+    };
+
+    window.resetUser = function() {
+      analytics.reset();
+      showStatus('User reset (logged out)', 'success');
+      showUserInfo();
+    };
+
+    window.trackButtonClick = function() {
+      analytics.track('Button Clicked', {
+        buttonId: 'demo-button',
+        page: 'examples',
+        timestamp: Date.now()
+      });
+      showStatus('Event tracked: Button Clicked', 'success');
+    };
+
+    window.trackCustomEvent = function() {
+      const eventName = prompt('Event name:', 'Custom Event');
+      if (eventName) {
+        analytics.track(eventName, {
+          source: 'demo',
+          customProperty: 'value'
+        });
+        showStatus('Event tracked: ' + eventName, 'success');
+      }
+    };
+
+    window.trackPurchase = function() {
+      analytics.track('Purchase Completed', {
+        orderId: 'order-' + Date.now(),
+        revenue: 99.99,
+        currency: 'USD',
+        products: ['product-1', 'product-2']
+      });
+      showStatus('Event tracked: Purchase Completed', 'success');
+    };
+
+    window.trackPage = function() {
+      analytics.page('Demo Page', 'Examples', {
+        experiment: 'variant-a'
+      });
+      showStatus('Page view tracked', 'success');
+    };
+
+    window.trackScreen = function() {
+      analytics.screen('Demo Screen', 'App', {
+        section: 'examples'
+      });
+      showStatus('Screen view tracked', 'success');
+    };
+
+    window.aliasUser = function() {
+      const newId = prompt('New user ID:', 'user-new-' + Date.now());
+      if (newId) {
+        const { anonymousId } = analytics.user();
+        analytics.alias(newId, anonymousId);
+        showStatus('User aliased to: ' + newId, 'success');
+      }
+    };
+
+    window.groupUser = function() {
+      const groupId = prompt('Group ID:', 'company-123');
+      if (groupId) {
+        analytics.group(groupId, {
+          name: 'Acme Inc',
+          plan: 'enterprise',
+          employees: 50
+        });
+        showStatus('User added to group: ' + groupId, 'success');
+      }
+    };
+
+    window.flushQueue = function() {
+      analytics.flush();
+      showStatus('Queue flushed', 'success');
+    };
+
+    window.debugInfo = function() {
+      analytics.debug();
+      showStatus('Debug info printed to console', 'info');
+    };
+
+    window.showUserInfo = function() {
+      const { userId, anonymousId, traits } = analytics.user();
+      const info = `
+        User ID: ${userId || 'Not set'}
+        Anonymous ID: ${anonymousId}
+        Traits: ${JSON.stringify(traits, null, 2)}
+      `;
+      document.getElementById('user-info').innerHTML = '<pre>' + info + '</pre>';
+    };
+
+    function showStatus(message, type = 'info') {
+      const status = document.createElement('div');
+      status.className = `status ${type}`;
+      status.textContent = message;
+      document.body.insertBefore(status, document.body.firstChild);
+      setTimeout(() => status.remove(), 3000);
+    }
+
+    // Initial user info
+    showUserInfo();
+
+    console.log('%c StickyQR Analytics SDK Demo Ready! ', 'background: #0066cc; color: white; font-size: 16px; padding: 5px;');
+    console.log('Try the buttons above to test different tracking features.');
+  </script>
+</body>
+</html>

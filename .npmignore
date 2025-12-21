@@ -1,0 +1,51 @@
+# Source files
+src/
+*.ts
+!*.d.ts
+
+# Tests
+**/*.test.ts
+**/*.test.js
+**/__tests__/
+coverage/
+.nyc_output/
+
+# Documentation (except README)
+docs/
+examples/
+*.md
+!README.md
+
+# Development files
+.github/
+.vscode/
+.idea/
+*.log
+.DS_Store
+
+# Build config
+tsconfig.json
+rollup.config.js
+jest.config.js
+.eslintrc.js
+.prettierrc
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# NPM
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Misc
+.env
+.env.local
+.env.*.local
+
+# Publishing
+PUBLISHING.md
+DEPLOYMENT_GUIDE.md
