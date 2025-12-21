@@ -37,7 +37,7 @@ jobs:
       run: npm run lint
 
     - name: Run tests
-      run: npm test -- --config jest.config.cjs --passWithNoTests
+      run: npm test
 
     - name: Build
       run: npm run build
