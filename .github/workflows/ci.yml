@@ -39,10 +39,15 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Run tests (with coverage)
+        run: npm test -- --coverage --coverageReporters=lcov
+
       - name: Build
         run: npm run build
 
       - name: Upload coverage reports to Codecov
+        if: success()
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
