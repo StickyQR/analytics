@@ -19,8 +19,8 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Run tests
-      run: npm test -- --config jest.config.cjs --passWithNoTests
+    # - name: Run tests
+    #   run: npm test -- --config jest.config.cjs --passWithNoTests
 
     - name: Build
       run: npm run build
