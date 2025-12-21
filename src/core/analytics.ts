@@ -268,10 +268,10 @@ export class Analytics {
    */
   async alias(userId: string, previousId?: string, options?: EventOptions): Promise<void> {
     const event: AliasEvent = {
+      ...this.buildBaseEvent(options),
       type: 'alias',
       userId,
-      previousId: previousId || this._anonymousId,
-      ...this.buildBaseEvent(options)
+      previousId: previousId || this._anonymousId
     } as AliasEvent;
 
     // Update current user ID
