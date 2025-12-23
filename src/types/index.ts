@@ -162,6 +162,11 @@ export interface Plugin {
   group?(event: GroupEvent): Promise<GroupEvent | null>;
 }
 
+/**
+ * Custom fetch function type - compatible with native fetch signature
+ */
+export type CustomFetch = (url: string | URL | Request, init?: RequestInit) => Promise<Response>;
+
 export interface AnalyticsConfig {
   writeKey: string;
   apiHost?: string;
@@ -177,6 +182,23 @@ export interface AnalyticsConfig {
   integrations?: {
     [key: string]: boolean | JsonMap;
   };
+  /**
+   * Custom fetch function for making HTTP requests.
+   * Useful for Next.js, custom headers, or testing.
+   * Defaults to global fetch if not provided.
+   * 
+   * @example
+   * // Next.js - disable caching
+   * customFetch: (url, init) => fetch(url, { ...init, cache: 'no-store' })
+   * 
+   * @example
+   * // Add custom headers
+   * customFetch: (url, init) => fetch(url, { 
+   *   ...init, 
+   *   headers: { ...init?.headers, 'X-Custom': 'value' } 
+   * })
+   */
+  customFetch?: CustomFetch;
 }
 
 export interface QueueItem {

@@ -18,7 +18,3 @@ export { DeviceEnrichmentPlugin } from './plugins/device-enrichment';
 
 // Types
 export * from './types';
-
-// Default export for convenience
-import { Analytics } from './core/analytics';
-export default Analytics;

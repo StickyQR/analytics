@@ -62,7 +62,8 @@ export class Analytics {
       retryAttempts: this.config.retryAttempts!,
       apiHost: this.config.apiHost!,
       writeKey: this.config.writeKey,
-      debug: this.config.debug!
+      debug: this.config.debug!,
+      customFetch: this.config.customFetch
     };
     this.queue = new Queue(queueConfig);
 
