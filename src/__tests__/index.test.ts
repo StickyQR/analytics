@@ -1,5 +1,5 @@
-import Analytics, {
-  Analytics as AnalyticsClass,
+import {
+  Analytics,
   Queue,
   Storage,
   uuid,
@@ -15,17 +15,10 @@ import Analytics, {
 } from '../index';
 
 describe('SDK Exports', () => {
-  describe('default export', () => {
-    it('should export Analytics as default', () => {
-      expect(Analytics).toBeDefined();
-      expect(typeof Analytics).toBe('function');
-    });
-  });
-
   describe('core exports', () => {
     it('should export Analytics class', () => {
-      expect(AnalyticsClass).toBeDefined();
-      expect(typeof AnalyticsClass).toBe('function');
+      expect(Analytics).toBeDefined();
+      expect(typeof Analytics).toBe('function');
     });
 
     it('should export Queue class', () => {
