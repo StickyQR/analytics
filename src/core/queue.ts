@@ -1,7 +1,7 @@
 /**
  * Event queue with automatic flushing and retry logic
  */
-import { AnalyticsEvent, QueueItem } from '../types';
+import { AnalyticsEvent, QueueItem, CustomFetch } from '../types';
 import { isNode } from '../utils/platform';
 
 export interface QueueConfig {
@@ -12,6 +12,11 @@ export interface QueueConfig {
   apiHost: string;
   writeKey: string;
   debug: boolean;
+  /**
+   * Custom fetch function for making HTTP requests.
+   * Defaults to global fetch if not provided.
+   */
+  customFetch?: CustomFetch;
 }
 
 export class Queue {
@@ -122,7 +127,9 @@ export class Queue {
       fetchOptions.keepalive = true;
     }
 
-    const response = await fetch(url, fetchOptions);
+    // Use custom fetch if provided, otherwise use global fetch
+    const fetchFn = this.config.customFetch || fetch;
+    const response = await fetchFn(url, fetchOptions);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
