@@ -44,7 +44,7 @@ git push -u origin main
 
 Before publishing, ensure:
 
-- [ ] All tests pass: `npm test`
+- [ ] All tests pass: `npm test -- --watchman=false`
 - [ ] Linter passes: `npm run lint`
 - [ ] Build succeeds: `npm run build`
 - [ ] Version updated in `package.json`
@@ -52,6 +52,7 @@ Before publishing, ensure:
 - [ ] README.md is accurate
 - [ ] All examples work
 - [ ] Documentation is complete
+- [ ] Runtime dependency list is correct (`uuid` is the only runtime dependency in 1.2.0)
 
 ## Publishing to NPM
 
@@ -60,7 +61,7 @@ Before publishing, ensure:
 ```bash
 # 1. Ensure package.json is correct
 # - name: "@stickyqr/analytics"
-# - version: "1.0.0"
+# - version: "1.2.0"
 # - main, module, types fields set
 # - files array includes "dist"
 
@@ -133,7 +134,7 @@ npm version major
 
 ```bash
 # Create release branch
-git checkout -b release/1.1.0
+git checkout -b release/1.2.0
 
 # Update version
 npm version minor
@@ -142,10 +143,10 @@ npm version minor
 # Add release notes
 
 # Commit changes
-git commit -am "chore: prepare release 1.1.0"
+git commit -am "chore: prepare release 1.2.0"
 
 # Push for review
-git push origin release/1.1.0
+git push origin release/1.2.0
 ```
 
 ### 2. Review & Test
@@ -160,10 +161,10 @@ git push origin release/1.1.0
 ```bash
 # Merge to main
 git checkout main
-git merge release/1.1.0
+git merge release/1.2.0
 
 # Tag release
-git tag v1.1.0
+git tag v1.2.0
 
 # Push
 git push origin main --tags
@@ -180,8 +181,8 @@ npm publish
 
 # Create GitHub Release
 # Go to: https://github.com/stickyqr/analytics/releases/new
-# - Tag: v1.1.0
-# - Title: v1.1.0
+# - Tag: v1.2.0
+# - Title: v1.2.0
 # - Description: Copy from CHANGELOG.md
 ```
 
@@ -229,12 +230,12 @@ Fix:
 
 ```bash
 # 1. Create and push tag
-git tag v1.1.0
-git push origin v1.1.0
+git tag v1.2.0
+git push origin v1.2.0
 
 # 2. Create GitHub Release
 # Go to: https://github.com/stickyqr/analytics/releases/new
-# - Select tag: v1.1.0
+# - Select tag: v1.2.0
 # - Click "Publish release"
 
 # 3. GitHub Actions will automatically:
@@ -269,6 +270,17 @@ All notable changes to this project will be documented in this file.
 
 ### Security
 - Security fixes
+
+## [1.2.0] - 2026-04-10
+
+### Added
+- Persistent `deviceId` on SDK-generated events
+- `deviceIdKey` config support
+- React Native `react-native-get-random-values` setup guidance
+
+### Changed
+- SDK-generated IDs now use UUIDv7
+- Release metadata and docs updated for 1.2.0
 
 ## [1.1.0] - 2024-12-20
 
@@ -312,17 +324,17 @@ npm view @stickyqr/analytics
 npm view @stickyqr/analytics versions
 
 # View specific version
-npm view @stickyqr/analytics@1.0.0
+npm view @stickyqr/analytics@1.2.0
 ```
 
 ### Unpublish (Use Carefully!)
 
 ```bash
 # Unpublish specific version (only within 72 hours)
-npm unpublish @stickyqr/analytics@1.0.0
+npm unpublish @stickyqr/analytics@1.2.0
 
 # Deprecate instead (preferred)
-npm deprecate @stickyqr/analytics@1.0.0 "This version has a critical bug, please upgrade to 1.0.1"
+npm deprecate @stickyqr/analytics@1.2.0 "This version has a critical bug, please upgrade to 1.2.1"
 ```
 
 ### Update Package Info
@@ -338,7 +350,7 @@ npm publish --readme-only
 
 ```bash
 # Update version with pre-release tag
-npm version 1.1.0-beta.1
+npm version 1.2.0-beta.1
 
 # Publish with tag
 npm publish --tag beta
@@ -351,7 +363,7 @@ npm install @stickyqr/analytics@beta
 
 ```bash
 # Tag as latest
-npm dist-tag add @stickyqr/analytics@1.1.0 latest
+npm dist-tag add @stickyqr/analytics@1.2.0 latest
 ```
 
 ## Package Access Control
@@ -442,7 +454,8 @@ npm publish
 
 1. **Always test before publishing**
    ```bash
-   npm test && npm run build
+   pnpm exec jest --config jest.config.cjs --passWithNoTests --runInBand --watchman=false
+   pnpm run build
    ```
 
 2. **Use semantic versioning correctly**
@@ -456,7 +469,7 @@ npm publish
 
 4. **Tag releases in git**
    ```bash
-   git tag v1.0.0
+   git tag v1.2.0
    git push --tags
    ```
 
@@ -467,7 +480,7 @@ npm publish
 
 6. **Deprecate, don't unpublish**
    ```bash
-   npm deprecate @stickyqr/analytics@1.0.0 "Upgrade to 1.0.1"
+   npm deprecate @stickyqr/analytics@1.2.0 "Upgrade to 1.2.1"
    ```
 
 7. **Test in multiple environments**

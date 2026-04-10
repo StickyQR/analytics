@@ -13,7 +13,7 @@ Complete guide for using `@stickyqr/analytics` with React Native and Expo 54.
 npx expo install @stickyqr/analytics
 
 # Install required peer dependencies
-npx expo install @react-native-async-storage/async-storage expo-constants expo-device
+npx expo install @react-native-async-storage/async-storage expo-constants expo-device react-native-get-random-values
 ```
 
 ### For Bare React Native Projects
@@ -25,6 +25,7 @@ npm install @stickyqr/analytics
 # Install peer dependencies
 npm install @react-native-async-storage/async-storage
 npm install expo-constants expo-device
+npm install react-native-get-random-values
 
 # Link native modules (if not using autolinking)
 cd ios && pod install && cd ..
@@ -36,6 +37,7 @@ cd ios && pod install && cd ..
 
 ```typescript
 // lib/analytics.ts
+import 'react-native-get-random-values';
 import { Analytics } from '@stickyqr/analytics';
 
 export const analytics = new Analytics({
@@ -51,6 +53,7 @@ export const analytics = new Analytics({
 
 ```typescript
 // contexts/AnalyticsContext.tsx
+import 'react-native-get-random-values';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Analytics } from '@stickyqr/analytics';
 
@@ -228,7 +231,7 @@ function SettingsScreen() {
 
   const handleLogout = async () => {
     analytics.track('User Logged Out');
-    await analytics.reset(); // Clear user data
+    await analytics.reset(); // Clear user data, preserve deviceId
   };
 
   return <Button title="Logout" onPress={handleLogout} />;
@@ -313,6 +316,7 @@ The SDK automatically collects app info if `expo-constants` is installed:
 ### AsyncStorage
 
 User data (user ID, traits, anonymous ID) is automatically persisted using `@react-native-async-storage/async-storage`.
+The SDK also persists `deviceId` separately using the same storage layer.
 
 ## Configuration
 
@@ -335,8 +339,17 @@ const analytics = new Analytics({
 
   // Storage keys
   anonymousIdKey: 'stickyqr_analytics_anonymous_id',
+  deviceIdKey: 'stickyqr_analytics_device_id',
   userIdKey: 'stickyqr_analytics_user_id'
 });
+```
+
+## React Native Randomness
+
+UUIDv7 generation requires `crypto.getRandomValues()`. If your React Native runtime does not expose it yet, install `react-native-get-random-values` and import it before initializing the SDK:
+
+```typescript
+import 'react-native-get-random-values';
 ```
 
 ## Troubleshooting
@@ -451,7 +464,7 @@ See complete examples in:
 
 The SDK respects user privacy:
 - ✅ Data stored locally (AsyncStorage)
-- ✅ User can be reset with `analytics.reset()`
+- ✅ User can be reset with `analytics.reset()` without rotating `deviceId`
 - ✅ No tracking until initialized
 - ✅ Full control over data sent
 

@@ -11,7 +11,7 @@ export function getDefaultContext(): AnalyticsContext {
   const context: AnalyticsContext = {
     library: {
       name: '@stickyqr/analytics',
-      version: '1.0.0'
+      version: '1.2.0'
     }
   };
 

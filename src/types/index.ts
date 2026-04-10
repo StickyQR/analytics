@@ -79,6 +79,7 @@ export interface IdentifyEvent {
   type: 'identify';
   userId?: string;
   anonymousId?: string;
+  deviceId?: string;
   traits?: UserTraits;
   context?: AnalyticsContext;
   timestamp: string;
@@ -91,6 +92,7 @@ export interface TrackEvent {
   properties?: EventProperties;
   userId?: string;
   anonymousId?: string;
+  deviceId?: string;
   context?: AnalyticsContext;
   timestamp: string;
   messageId: string;
@@ -103,6 +105,7 @@ export interface PageEvent {
   properties?: EventProperties;
   userId?: string;
   anonymousId?: string;
+  deviceId?: string;
   context?: AnalyticsContext;
   timestamp: string;
   messageId: string;
@@ -115,6 +118,7 @@ export interface ScreenEvent {
   properties?: EventProperties;
   userId?: string;
   anonymousId?: string;
+  deviceId?: string;
   context?: AnalyticsContext;
   timestamp: string;
   messageId: string;
@@ -124,6 +128,7 @@ export interface AliasEvent {
   type: 'alias';
   userId: string;
   previousId: string;
+  deviceId?: string;
   context?: AnalyticsContext;
   timestamp: string;
   messageId: string;
@@ -135,6 +140,7 @@ export interface GroupEvent {
   traits?: JsonMap;
   userId?: string;
   anonymousId?: string;
+  deviceId?: string;
   context?: AnalyticsContext;
   timestamp: string;
   messageId: string;
@@ -172,6 +178,7 @@ export interface AnalyticsConfig {
   debug?: boolean;
   trackPageViews?: boolean;
   anonymousIdKey?: string;
+  deviceIdKey?: string;
   userIdKey?: string;
   plugins?: Plugin[];
   integrations?: {

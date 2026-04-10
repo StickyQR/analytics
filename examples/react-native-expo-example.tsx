@@ -2,6 +2,7 @@
  * React Native (Expo 54) Integration Example
  * Full example for @stickyqr/analytics in React Native
  */
+import 'react-native-get-random-values';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { View, Text, Button, ScrollView, StyleSheet } from 'react-native';
 import { Analytics } from '@stickyqr/analytics';
@@ -111,7 +112,7 @@ export function HomeScreen({ navigation }: any) {
   });
 
   const analytics = useAnalytics();
-  const { userId, traits } = analytics.user();
+  const { userId, deviceId, traits } = analytics.user();
 
   const handleButtonClick = () => {
     analytics.track('Button Clicked', {
@@ -135,6 +136,7 @@ export function HomeScreen({ navigation }: any) {
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Home Screen</Text>
       <Text>User ID: {userId || 'Not logged in'}</Text>
+      <Text>Device ID: {deviceId}</Text>
       <Text>Email: {traits.email || 'N/A'}</Text>
 
       <View style={styles.buttonGroup}>
@@ -203,7 +205,7 @@ export function SettingsScreen() {
 
   const handleLogout = () => {
     analytics.track('User Logged Out');
-    analytics.reset(); // Clear user data
+    analytics.reset(); // Clear user data, preserve deviceId
   };
 
   const handleDebug = () => {

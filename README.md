@@ -13,7 +13,8 @@ A lightweight, modular StickyQR Analytics SDK for browser applications. Built as
 - **Queue & Retry**: Automatic batching and retry logic for reliable delivery
 - **Privacy-First**: localStorage/cookie fallback, configurable storage
 - **TypeScript**: Full type safety and IntelliSense support
-- **Zero Dependencies**: Lightweight bundle size
+- **UUIDv7 IDs**: Time-ordered SDK-generated IDs for better storage locality
+- **Minimal Runtime Dependencies**: Lightweight bundle size with a single runtime dependency
 
 ## Installation
 
@@ -24,7 +25,7 @@ npm install @stickyqr/analytics
 Or use via CDN:
 
 ```html
-<script src="https://cdn.stickyqr.com/analytics/1.0.0/index.umd.js"></script>
+<script src="https://cdn.stickyqr.com/analytics/1.2.0/index.umd.js"></script>
 ```
 
 ## Quick Start
@@ -120,6 +121,7 @@ const analytics = new Analytics({
   debug: false,                   // Enable debug logging
   trackPageViews: true,           // Auto-track page views
   anonymousIdKey: 'stickyqr_analytics_anonymous_id',
+  deviceIdKey: 'stickyqr_analytics_device_id',
   userIdKey: 'stickyqr_analytics_user_id',
 
   // Plugins
@@ -129,6 +131,15 @@ const analytics = new Analytics({
   ]
 });
 ```
+
+## Identity Fields
+
+The SDK manages two installation-scoped identifiers:
+
+- `anonymousId`: SDK-generated UUIDv7 that can still be overridden per event via `EventOptions`.
+- `deviceId`: SDK-generated UUIDv7 that is persisted separately and is always attached to SDK-generated events.
+
+`analytics.reset()` rotates the `anonymousId`, clears `userId` and traits, and keeps the persisted `deviceId`.
 
 ## Plugins
 
@@ -286,12 +297,12 @@ analytics.group('company-123', {
 Get current user information.
 
 ```typescript
-const { userId, anonymousId, traits } = analytics.user();
+const { userId, anonymousId, deviceId, traits } = analytics.user();
 ```
 
 ### `reset()`
 
-Reset user (logout).
+Reset user (logout). This clears the current user and traits, rotates `anonymousId`, and preserves `deviceId`.
 
 ```typescript
 analytics.reset();
@@ -342,9 +353,11 @@ function onUserConsent() {
   });
 }
 
-// Clear all data on user request
+// Reset user identity while keeping the persisted deviceId
 analytics.reset();
-localStorage.clear(); // Remove stored IDs
+
+// If you also want to wipe the persisted deviceId, remove its storage key
+localStorage.removeItem('stickyqr_analytics_device_id');
 ```
 
 ## Framework Integration

@@ -2,10 +2,10 @@ import { uuid, messageId } from '../uuid';
 
 describe('uuid', () => {
   describe('uuid()', () => {
-    it('should generate a valid UUID v4 format', () => {
+    it('should generate a valid UUID v7 format', () => {
       const id = uuid();
-      // UUID v4 format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      // UUID v7 format: xxxxxxxx-xxxx-7xxx-yxxx-xxxxxxxxxxxx
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       expect(id).toMatch(uuidRegex);
     });
 
@@ -17,10 +17,10 @@ describe('uuid', () => {
       expect(uuids.size).toBe(1000);
     });
 
-    it('should have version 4 in the correct position', () => {
+    it('should have version 7 in the correct position', () => {
       const id = uuid();
-      // Position 14 should be '4'
-      expect(id[14]).toBe('4');
+      // Position 14 should be '7'
+      expect(id[14]).toBe('7');
     });
 
     it('should have correct variant bits', () => {
@@ -33,7 +33,7 @@ describe('uuid', () => {
   describe('messageId()', () => {
     it('should generate a message ID with correct prefix', () => {
       const id = messageId();
-      expect(id).toMatch(/^analytics-\d+-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+      expect(id).toMatch(/^analytics-\d+-[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
     });
 
     it('should include a timestamp', () => {
@@ -58,4 +58,3 @@ describe('uuid', () => {
     });
   });
 });
-

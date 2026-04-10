@@ -136,7 +136,7 @@
 
     window.resetUser = function() {
       analytics.reset();
-      showStatus('User reset (logged out)', 'success');
+      showStatus('User reset (logged out, deviceId preserved)', 'success');
       showUserInfo();
     };
 
@@ -216,10 +216,11 @@
     };
 
     window.showUserInfo = function() {
-      const { userId, anonymousId, traits } = analytics.user();
+      const { userId, anonymousId, deviceId, traits } = analytics.user();
       const info = `
         User ID: ${userId || 'Not set'}
         Anonymous ID: ${anonymousId}
+        Device ID: ${deviceId}
         Traits: ${JSON.stringify(traits, null, 2)}
       `;
       document.getElementById('user-info').innerHTML = '<pre>' + info + '</pre>';

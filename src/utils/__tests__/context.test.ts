@@ -14,7 +14,7 @@ describe('context', () => {
       
       expect(context.library).toBeDefined();
       expect(context.library?.name).toBe('@stickyqr/analytics');
-      expect(context.library?.version).toBe('1.0.0');
+      expect(context.library?.version).toBe('1.2.0');
     });
 
     it('should return consistent library info on multiple calls', () => {
@@ -43,4 +43,3 @@ describe('context', () => {
     });
   });
 });
-

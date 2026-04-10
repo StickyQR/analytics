@@ -149,12 +149,13 @@ export function ProductCard({
 export function Dashboard() {
   usePageTracking('Dashboard');
   const analytics = useAnalytics();
-  const { userId, traits } = analytics.user();
+  const { userId, deviceId, traits } = analytics.user();
 
   return (
     <div>
       <h1>Dashboard</h1>
       <p>User ID: {userId}</p>
+      <p>Device ID: {deviceId}</p>
       <p>Email: {traits.email}</p>
       <button onClick={() => analytics.reset()}>Logout</button>
     </div>

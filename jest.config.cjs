@@ -11,10 +11,7 @@ module.exports = {
   transform: {
     '^.+\\.ts$': ['ts-jest', {
       useESM: true,
-      tsconfig: {
-        module: 'ESNext',
-        moduleResolution: 'node'
-      }
+      tsconfig: './tsconfig.test.json'
     }]
   },
   moduleNameMapper: {
@@ -29,4 +26,3 @@ module.exports = {
     '!src/**/*.spec.ts'
   ]
 };
-
