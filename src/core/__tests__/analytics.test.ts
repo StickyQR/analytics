@@ -1,4 +1,5 @@
 import { Analytics } from '../analytics';
+import { Storage } from '../../utils/storage';
 import { Plugin, TrackEvent, IdentifyEvent, PageEvent } from '../../types';
 
 describe('Analytics', () => {
@@ -31,7 +32,13 @@ describe('Analytics', () => {
     it('should generate anonymous ID', () => {
       const user = analytics.user();
       expect(user.anonymousId).toBeDefined();
-      expect(user.anonymousId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+      expect(user.anonymousId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+    });
+
+    it('should generate device ID', () => {
+      const user = analytics.user();
+      expect(user.deviceId).toBeDefined();
+      expect(user.deviceId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
     });
 
     it('should not have userId initially', () => {
@@ -76,6 +83,17 @@ describe('Analytics', () => {
       expect(user.userId).toBe('user-123');
       expect(user.traits.email).toBe('new@test.com');
     });
+
+    it('should include deviceId in identify events', async () => {
+      await analytics.identify('user-123', { email: 'test@test.com' });
+      await analytics.flush();
+
+      const callArgs = mockFetch.mock.calls[0];
+      const body = JSON.parse(callArgs[1].body);
+      const identifyEvent = body.batch.find((e: any) => e.type === 'identify');
+
+      expect(identifyEvent.deviceId).toBe(analytics.user().deviceId);
+    });
   });
 
   describe('track()', () => {
@@ -108,6 +126,16 @@ describe('Analytics', () => {
       const body = JSON.parse(callArgs[1].body);
       
       expect(body.batch[0].anonymousId).toBeDefined();
+    });
+
+    it('should include deviceId in events', async () => {
+      await analytics.track('Test Event');
+      await analytics.flush();
+
+      const callArgs = mockFetch.mock.calls[0];
+      const body = JSON.parse(callArgs[1].body);
+
+      expect(body.batch[0].deviceId).toBe(analytics.user().deviceId);
     });
 
     it('should include userId in events after identify', async () => {
@@ -163,6 +191,7 @@ describe('Analytics', () => {
       const body = JSON.parse(callArgs[1].body);
       
       expect(body.batch[0].properties).toEqual({ section: 'hero' });
+      expect(body.batch[0].deviceId).toBe(analytics.user().deviceId);
     });
   });
 
@@ -184,6 +213,7 @@ describe('Analytics', () => {
       expect(body.batch[0].type).toBe('screen');
       expect(body.batch[0].name).toBe('Profile');
       expect(body.batch[0].category).toBe('User');
+      expect(body.batch[0].deviceId).toBe(analytics.user().deviceId);
     });
   });
 
@@ -215,6 +245,7 @@ describe('Analytics', () => {
       expect(aliasEvent).toBeDefined();
       expect(aliasEvent.userId).toBe('new-user-id');
       expect(aliasEvent.previousId).toBe(originalAnonymousId);
+      expect(aliasEvent.deviceId).toBe(analytics.user().deviceId);
     });
   });
 
@@ -236,6 +267,7 @@ describe('Analytics', () => {
       expect(body.batch[0].type).toBe('group');
       expect(body.batch[0].groupId).toBe('company-123');
       expect(body.batch[0].traits).toEqual({ name: 'Acme Inc', plan: 'enterprise' });
+      expect(body.batch[0].deviceId).toBe(analytics.user().deviceId);
     });
   });
 
@@ -264,6 +296,14 @@ describe('Analytics', () => {
       expect(analytics.user().anonymousId).toBeDefined();
       expect(analytics.user().anonymousId).not.toBe(originalAnonymousId);
     });
+
+    it('should preserve deviceId', () => {
+      const originalDeviceId = analytics.user().deviceId;
+
+      analytics.reset();
+
+      expect(analytics.user().deviceId).toBe(originalDeviceId);
+    });
   });
 
   describe('user()', () => {
@@ -272,7 +312,33 @@ describe('Analytics', () => {
       
       expect(user).toHaveProperty('userId');
       expect(user).toHaveProperty('anonymousId');
+      expect(user).toHaveProperty('deviceId');
       expect(user).toHaveProperty('traits');
+    });
+
+    it('should read existing deviceId from a custom storage key', () => {
+      analytics.destroy();
+
+      const getSyncSpy = jest.spyOn(Storage.prototype, 'getSync').mockImplementation((key: string) => {
+        if (key === 'custom_anonymous_id') return 'existing-anon-id';
+        if (key === 'custom_device_id') return 'existing-device-id';
+        return null;
+      });
+      const setSyncSpy = jest.spyOn(Storage.prototype, 'setSync').mockImplementation();
+
+      analytics = new Analytics({
+        ...defaultConfig,
+        anonymousIdKey: 'custom_anonymous_id',
+        deviceIdKey: 'custom_device_id'
+      });
+
+      expect(analytics.user().anonymousId).toBe('existing-anon-id');
+      expect(analytics.user().deviceId).toBe('existing-device-id');
+      expect(getSyncSpy).toHaveBeenCalledWith('custom_device_id');
+      expect(setSyncSpy).not.toHaveBeenCalledWith('custom_device_id', expect.any(String));
+
+      getSyncSpy.mockRestore();
+      setSyncSpy.mockRestore();
     });
   });
 
@@ -387,6 +453,7 @@ describe('Analytics', () => {
       const body = JSON.parse(callArgs[1].body);
       
       expect(body.batch[0].anonymousId).toBe('custom-anon-id');
+      expect(body.batch[0].deviceId).toBe(analytics.user().deviceId);
     });
   });
 
@@ -402,4 +469,3 @@ describe('Analytics', () => {
     });
   });
 });
-

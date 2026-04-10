@@ -51,7 +51,7 @@ analytics.identify('user-123', {
 ### Option 2: CDN (Browser)
 
 ```html
-<script src="https://cdn.stickyqr.com/analytics/1.0.0/index.umd.js"></script>
+<script src="https://cdn.stickyqr.com/analytics/1.2.0/index.umd.js"></script>
 <script>
   const analytics = new StickyQRAnalytics.Analytics({
     writeKey: 'your-write-key'
@@ -128,6 +128,8 @@ analytics.page('Pricing', 'Marketing', { plan: 'enterprise' });
 ```javascript
 analytics.reset();
 ```
+
+`analytics.reset()` rotates `anonymousId` and clears the current user state, but keeps the persisted `deviceId`.
 
 ## Backend Setup
 
@@ -302,6 +304,7 @@ const analytics = new Analytics({
 
   // Storage
   anonymousIdKey: 'stickyqr_analytics_anonymous_id',
+  deviceIdKey: 'stickyqr_analytics_device_id',
   userIdKey: 'stickyqr_analytics_user_id',
 
   // Plugins
@@ -319,7 +322,7 @@ const analytics = new Analytics({
 });
 
 // View current user
-console.log(analytics.user());
+console.log(analytics.user()); // includes userId, anonymousId, deviceId, and traits
 
 // View analytics state
 analytics.debug();

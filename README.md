@@ -13,7 +13,8 @@ A lightweight, modular StickyQR Analytics SDK for browser applications. Built as
 - **Queue & Retry**: Automatic batching and retry logic for reliable delivery
 - **Privacy-First**: localStorage/cookie fallback, configurable storage
 - **TypeScript**: Full type safety and IntelliSense support
-- **Zero Dependencies**: Lightweight bundle size
+- **UUIDv7 IDs**: Time-ordered SDK-generated IDs for better storage locality
+- **Minimal Runtime Dependencies**: Lightweight bundle size with a single runtime dependency
 
 ## Installation
 
@@ -24,7 +25,7 @@ npm install @stickyqr/analytics
 Or use via CDN:
 
 ```html
-<script src="https://cdn.stickyqr.com/analytics/1.0.0/index.umd.js"></script>
+<script src="https://cdn.stickyqr.com/analytics/1.2.0/index.umd.js"></script>
 ```
 
 ## Quick Start
@@ -114,18 +115,15 @@ const analytics = new Analytics({
   writeKey: "your-write-key",
   apiHost: "https://api.stickyqr.com/analytics", // Optional, defaults to https://api.stickyqr.com/analytics
 
-  flushAt: 20, // Flush after N events
-  flushInterval: 10000, // Flush every N ms
-  maxQueueSize: 100, // Max events in queue
-  retryAttempts: 3, // Retry failed requests
-  debug: false, // Enable debug logging
-  trackPageViews: true, // Auto-track page views
-  anonymousIdKey: "stickyqr_analytics_anonymous_id",
-  userIdKey: "stickyqr_analytics_user_id",
-
-  // Custom fetch function (optional)
-  // Useful for Next.js, custom headers, or testing
-  customFetch: (url, init) => fetch(url, { ...init, cache: "no-store" }),
+  flushAt: 20,                    // Flush after N events
+  flushInterval: 10000,           // Flush every N ms
+  maxQueueSize: 100,              // Max events in queue
+  retryAttempts: 3,               // Retry failed requests
+  debug: false,                   // Enable debug logging
+  trackPageViews: true,           // Auto-track page views
+  anonymousIdKey: 'stickyqr_analytics_anonymous_id',
+  deviceIdKey: 'stickyqr_analytics_device_id',
+  userIdKey: 'stickyqr_analytics_user_id',
 
   // Plugins
   plugins: [
@@ -135,73 +133,14 @@ const analytics = new Analytics({
 });
 ```
 
-## Custom Fetch
+## Identity Fields
 
-The `customFetch` option allows you to provide a custom fetch function for making HTTP requests. This is useful for:
+The SDK manages two installation-scoped identifiers:
 
-- **Next.js App Router**: Disable caching for analytics requests
-- **Custom headers**: Add authentication or custom headers
-- **Proxying**: Route requests through your own server
-- **Testing**: Mock network requests in tests
+- `anonymousId`: SDK-generated UUIDv7 that can still be overridden per event via `EventOptions`.
+- `deviceId`: SDK-generated UUIDv7 that is persisted separately and is always attached to SDK-generated events.
 
-### Examples
-
-#### Next.js (Disable Caching)
-
-```typescript
-const analytics = new Analytics({
-  writeKey: "your-write-key",
-  customFetch: (url, init) =>
-    fetch(url, {
-      ...init,
-      cache: "no-store",
-    }),
-});
-```
-
-#### Add Custom Headers
-
-```typescript
-const analytics = new Analytics({
-  writeKey: "your-write-key",
-  customFetch: (url, init) =>
-    fetch(url, {
-      ...init,
-      headers: {
-        ...init?.headers,
-        "X-Custom-Header": "my-value",
-        "X-API-Version": "2024-01",
-      },
-    }),
-});
-```
-
-#### Proxy Through Your Server
-
-```typescript
-const analytics = new Analytics({
-  writeKey: "your-write-key",
-  apiHost: "/api/analytics-proxy", // Your proxy endpoint
-  customFetch: (url, init) => fetch(url, init),
-});
-```
-
-#### Testing with Mock
-
-```typescript
-const mockFetch = jest.fn().mockResolvedValue({
-  ok: true,
-  json: () => Promise.resolve({ success: true }),
-});
-
-const analytics = new Analytics({
-  writeKey: "test-key",
-  customFetch: mockFetch,
-});
-
-// Your tests...
-expect(mockFetch).toHaveBeenCalled();
-```
+`analytics.reset()` rotates the `anonymousId`, clears `userId` and traits, and keeps the persisted `deviceId`.
 
 ## Plugins
 
@@ -359,12 +298,12 @@ analytics.group("company-123", {
 Get current user information.
 
 ```typescript
-const { userId, anonymousId, traits } = analytics.user();
+const { userId, anonymousId, deviceId, traits } = analytics.user();
 ```
 
 ### `reset()`
 
-Reset user (logout).
+Reset user (logout). This clears the current user and traits, rotates `anonymousId`, and preserves `deviceId`.
 
 ```typescript
 analytics.reset();
@@ -419,9 +358,11 @@ function onUserConsent() {
   });
 }
 
-// Clear all data on user request
+// Reset user identity while keeping the persisted deviceId
 analytics.reset();
-localStorage.clear(); // Remove stored IDs
+
+// If you also want to wipe the persisted deviceId, remove its storage key
+localStorage.removeItem('stickyqr_analytics_device_id');
 ```
 
 ## Framework Integration

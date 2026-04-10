@@ -29,7 +29,7 @@ npm publish --access public
 # Initialize git
 git init
 git add .
-git commit -m "Initial release v1.0.0"
+git commit -m "Release v1.2.0"
 
 # Create repo on GitHub: https://github.com/new
 # Repository name: analytics
@@ -40,7 +40,7 @@ git branch -M main
 git push -u origin main
 
 # Create release
-git tag v1.0.0
+git tag v1.2.0
 git push --tags
 ```
 
@@ -62,14 +62,14 @@ npm install @stickyqr/analytics
 
 ```html
 <!-- Or via CDN -->
-<script src="https://unpkg.com/@stickyqr/analytics@1.0.0/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@stickyqr/analytics@1.2.0/dist/index.umd.js"></script>
 ```
 
 ### React Native / Expo
 
 ```bash
 npx expo install @stickyqr/analytics
-npx expo install @react-native-async-storage/async-storage expo-constants expo-device
+npx expo install @react-native-async-storage/async-storage expo-constants expo-device react-native-get-random-values
 ```
 
 ### Node.js
@@ -192,7 +192,7 @@ const userId = analytics.storage.getSync('userId');
 
 - **Bundle Size**: 17KB (minified)
 - **TypeScript**: Full type support
-- **Dependencies**: Zero runtime dependencies
+- **Dependencies**: 1 runtime dependency (`uuid`)
 - **Peer Dependencies**: Optional (React Native only)
 
 ---

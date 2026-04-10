@@ -31,6 +31,7 @@ const DEFAULT_CONFIG: Partial<AnalyticsConfig> = {
   debug: false,
   trackPageViews: true,
   anonymousIdKey: 'analytics_anonymous_id',
+  deviceIdKey: 'analytics_device_id',
   userIdKey: 'analytics_user_id',
   integrations: {}
 };
@@ -42,6 +43,7 @@ export class Analytics {
   private plugins: Map<string, Plugin> = new Map();
   private _userId?: string;
   private _anonymousId: string;
+  private _deviceId: string;
   private _traits: UserTraits = {};
   private isReady = false;
 
@@ -51,6 +53,7 @@ export class Analytics {
 
     // Initialize or retrieve IDs
     this._anonymousId = this.getOrCreateAnonymousId();
+    this._deviceId = this.getOrCreateDeviceId();
     this._userId = this.storage.getSync(this.config.userIdKey!) || undefined;
     this._traits = this.storage.getSync('analytics_traits') || {};
 
@@ -106,11 +109,22 @@ export class Analytics {
    * Get or create anonymous ID
    */
   private getOrCreateAnonymousId(): string {
-    let id = this.storage.getSync<string>(this.config.anonymousIdKey!);
+    return this.getOrCreateId(this.config.anonymousIdKey!);
+  }
+
+  /**
+   * Get or create device ID
+   */
+  private getOrCreateDeviceId(): string {
+    return this.getOrCreateId(this.config.deviceIdKey!);
+  }
+
+  private getOrCreateId(storageKey: string): string {
+    let id = this.storage.getSync<string>(storageKey);
 
     if (!id) {
       id = uuid();
-      this.storage.setSync(this.config.anonymousIdKey!, id);
+      this.storage.setSync(storageKey, id);
     }
 
     return id;
@@ -161,6 +175,7 @@ export class Analytics {
     return {
       userId: options.userId || this._userId,
       anonymousId: options.anonymousId || this._anonymousId,
+      deviceId: this._deviceId,
       context,
       timestamp: options.timestamp
         ? new Date(options.timestamp).toISOString()
@@ -314,10 +329,11 @@ export class Analytics {
   /**
    * Get user info
    */
-  user(): { userId?: string; anonymousId: string; traits: UserTraits } {
+  user(): { userId?: string; anonymousId: string; deviceId: string; traits: UserTraits } {
     return {
       userId: this._userId,
       anonymousId: this._anonymousId,
+      deviceId: this._deviceId,
       traits: this._traits
     };
   }
@@ -349,6 +365,7 @@ export class Analytics {
     console.log('[Analytics] Debug Info:', {
       userId: this._userId,
       anonymousId: this._anonymousId,
+      deviceId: this._deviceId,
       traits: this._traits,
       queueSize: this.queue.size(),
       plugins: Array.from(this.plugins.keys()),

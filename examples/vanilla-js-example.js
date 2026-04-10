@@ -4,7 +4,7 @@
  */
 
 // Import from UMD build (for browser)
-// <script src="https://cdn.stickyqr.com/analytics/1.0.0/index.umd.js"></script>
+// <script src="https://cdn.stickyqr.com/analytics/1.2.0/index.umd.js"></script>
 
 // Initialize Analytics
 const analytics = new StickyQRAnalytics.Analytics({
